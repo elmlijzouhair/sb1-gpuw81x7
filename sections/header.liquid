@@ -1,0 +1,101 @@
+{% assign transparent = false %}
+{% if template == 'index' %}
+  {% assign transparent = true %}
+{% endif %}
+
+<nav class="site-header {% if transparent %}site-header--transparent{% endif %}" data-header>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-20">
+      <div class="flex items-center">
+        <button class="lg:hidden p-2 menu-button">
+          {% render 'icon-menu' %}
+        </button>
+        <div class="hidden lg:flex items-center space-x-8 ml-8">
+          {% for link in linklists.main-menu.links %}
+            <a href="{{ link.url }}" class="nav-link">{{ link.title }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="flex-shrink-0 flex items-center">
+        <h1 class="text-3xl font-serif font-bold">
+          <a href="/" class="site-header__logo">
+            {% if settings.logo != blank %}
+              <img src="{{ settings.logo | img_url: 'medium' }}" alt="{{ shop.name }}">
+            {% else %}
+              {{ shop.name }}
+            {% endif %}
+          </a>
+        </h1>
+      </div>
+
+      <div class="flex items-center space-x-4">
+        <button class="p-2 js-search-toggle">
+          {% render 'icon-search' %}
+        </button>
+        <a href="/account" class="p-2">
+          {% render 'icon-account' %}
+        </a>
+        <a href="/cart" class="p-2 relative">
+          {% render 'icon-cart' %}
+          <span class="cart-count">{{ cart.item_count }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+{% style %}
+.site-header {
+  position: fixed;
+  width: 100%;
+  z-index: 50;
+  transition: all 0.3s;
+}
+
+.site-header--transparent {
+  background: transparent;
+}
+
+.site-header--transparent .nav-link {
+  color: white;
+}
+
+.site-header--scrolled {
+  background: white;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.site-header--scrolled .nav-link {
+  color: #1f2937;
+}
+
+.cart-count {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 1rem;
+  width: 1rem;
+  background: white;
+  color: black;
+  font-size: 0.75rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+{% endstyle %}
+
+{% javascript %}
+document.addEventListener('DOMContentLoaded', function() {
+  const header = document.querySelector('[data-header]');
+  
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 0) {
+      header.classList.add('site-header--scrolled');
+    } else {
+      header.classList.remove('site-header--scrolled');
+    }
+  });
+});
+{% endjavascript %}

@@ -1,0 +1,149 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="mb-8">
+    <div class="flex items-center justify-between">
+      <h1 class="text-3xl font-serif font-bold">Addresses</h1>
+      <button type="button" class="bg-black text-white px-6 py-2 font-medium hover:bg-gray-900 transition-colors" onclick="Shopify.CustomerAddress.toggleNewForm()">
+        Add New Address
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {% paginate customer.addresses by 12 %}
+      {% for address in customer.addresses %}
+        <div class="border rounded-lg p-6 relative {% if address == customer.default_address %}border-black{% endif %}">
+          {% if address == customer.default_address %}
+            <span class="absolute top-4 right-4 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+              Default
+            </span>
+          {% endif %}
+          
+          <div class="text-sm text-gray-500 space-y-1">
+            {{ address | format_address }}
+          </div>
+          
+          <div class="mt-4 space-x-2">
+            <button type="button" class="text-sm text-gray-600 hover:text-black" onclick="Shopify.CustomerAddress.toggleEditForm({{ address.id }})">
+              Edit
+            </button>
+            <span class="text-gray-300">|</span>
+            <button type="button" class="text-sm text-gray-600 hover:text-black" onclick="Shopify.CustomerAddress.destroy({{ address.id }})">
+              Delete
+            </button>
+            {% if address != customer.default_address %}
+              <span class="text-gray-300">|</span>
+              <button type="button" class="text-sm text-gray-600 hover:text-black" onclick="Shopify.CustomerAddress.setDefault({{ address.id }})">
+                Set as Default
+              </button>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      
+      {% if paginate.pages > 1 %}
+        {% render 'pagination', paginate: paginate %}
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</div>
+
+{% form 'customer_address', customer.new_address %}
+  <div id="AddAddress" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity hidden">
+    <div class="fixed inset-0 z-10 overflow-y-auto">
+      <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+        <div class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+          <div class="absolute right-0 top-0 pr-4 pt-4">
+            <button type="button" class="text-gray-400 hover:text-gray-500" onclick="Shopify.CustomerAddress.toggleNewForm()">
+              <span class="sr-only">Close</span>
+              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="sm:flex sm:items-start">
+            <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+              <h3 class="text-base font-semibold leading-6 text-gray-900">Add New Address</h3>
+              <div class="mt-2">
+                <div class="grid grid-cols-6 gap-6">
+                  <div class="col-span-6 sm:col-span-3">
+                    <label for="first_name" class="block text-sm font-medium text-gray-700">First name</label>
+                    <input type="text" name="address[first_name]" id="first_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                  </div>
+
+                  <div class="col-span-6 sm:col-span-3">
+                    <label for="last_name" class="block text-sm font-medium text-gray-700">Last name</label>
+                    <input type="text" name="address[last_name]" id="last_name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                  </div>
+
+                  <div class="col-span-6">
+                    <label for="company" class="block text-sm font-medium text-gray-700">Company</label>
+                    <input type="text" name="address[company]" id="company" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                  </div>
+
+                  <div class="col-span-6">
+                    <label for="address1" class="block text-sm font-medium text-gray-700">Address</label>
+                    <input type="text" name="address[address1]" id="address1" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                  </div>
+
+                  <div class="col-span-6">
+                    <label for="address2" class="block text-sm font-medium text-gray-700">Apartment, suite, etc.</label>
+                    <input type="text" name="address[address2]" id="address2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                  </div>
+
+                  <div class="col-span-6 sm:col-span-3">
+                    <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                    <input type="text" name="address[city]" id="city" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                  </div>
+
+                  <div class="col-span-6 sm:col-span-3">
+                    <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
+                    <select id="country" name="address[country]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                      {{ all_country_option_tags }}
+                    </select>
+                  </div>
+
+                  <div class="col-span-6 sm:col-span-3">
+                    <label for="province" class="block text-sm font-medium text-gray-700">Province</label>
+                    <select id="province" name="address[province]" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                    </select>
+                  </div>
+
+                  <div class="col-span-6 sm:col-span-3">
+                    <label for="zip" class="block text-sm font-medium text-gray-700">Postal/ZIP code</label>
+                    <input type="text" name="address[zip]" id="zip" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                  </div>
+
+                  <div class="col-span-6">
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone</label>
+                    <input type="tel" name="address[phone]" id="phone" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black sm:text-sm">
+                  </div>
+
+                  <div class="col-span-6">
+                    <div class="flex items-start">
+                      <div class="flex h-5 items-center">
+                        {{ form.set_as_default_checkbox }}
+                      </div>
+                      <div class="ml-3 text-sm">
+                        <label for="address[default]" class="font-medium text-gray-700">Set as default address</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
+            <button type="submit" class="inline-flex w-full justify-center rounded-md bg-black px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-900 sm:ml-3 sm:w-auto">
+              Add Address
+            </button>
+            <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto" onclick="Shopify.CustomerAddress.toggleNewForm()">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endform %}

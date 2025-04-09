@@ -1,0 +1,83 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2">
+      <div class="flex items-center justify-between mb-8">
+        <h1 class="text-3xl font-serif font-bold">Order History</h1>
+        <a href="{{ routes.account_logout_url }}" class="text-gray-600 hover:text-black">Log out</a>
+      </div>
+
+      {% if customer.orders.size > 0 %}
+        <div class="border rounded-lg overflow-hidden">
+          <table class="w-full">
+            <thead>
+              <tr class="bg-gray-50">
+                <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Order</th>
+                <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Date</th>
+                <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Payment Status</th>
+                <th class="px-6 py-3 text-left text-sm font-medium text-gray-500">Fulfillment Status</th>
+                <th class="px-6 py-3 text-right text-sm font-medium text-gray-500">Total</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              {% for order in customer.orders %}
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-black">
+                    <a href="{{ order.customer_url }}" class="hover:underline">#{{ order.name }}</a>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ order.created_at | date: "%B %d, %Y" }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ order.financial_status_label }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {{ order.fulfillment_status_label }}
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {{ order.total_price | money }}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="text-center py-12 bg-gray-50 rounded-lg">
+          <p class="text-gray-500">You haven't placed any orders yet.</p>
+          <a href="/collections/all" class="inline-block mt-4 bg-black text-white px-8 py-3 font-medium hover:bg-gray-900 transition-colors">
+            Start Shopping
+          </a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="lg:col-span-1">
+      <div class="bg-gray-50 rounded-lg p-6">
+        <h2 class="text-lg font-medium mb-4">Account Details</h2>
+        <div class="space-y-4">
+          <div>
+            <h3 class="font-medium mb-1">{{ customer.name }}</h3>
+            <p class="text-gray-500">{{ customer.email }}</p>
+          </div>
+          
+          <div>
+            <h3 class="font-medium mb-1">Default Address</h3>
+            {% if customer.default_address %}
+              <p class="text-gray-500">
+                {{ customer.default_address | format_address }}
+              </p>
+            {% else %}
+              <p class="text-gray-500">No default address set</p>
+            {% endif %}
+          </div>
+          
+          <div class="pt-4">
+            <a href="{{ routes.account_addresses_url }}" class="text-black hover:underline">
+              View Addresses ({{ customer.addresses_count }})
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

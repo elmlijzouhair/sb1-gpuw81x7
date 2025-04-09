@@ -1,0 +1,24 @@
+<div class="page-width">
+  <header class="collection-header">
+    <h1 class="collection-header__title">{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <div class="rte collection-header__description">
+        {{ collection.description }}
+      </div>
+    {% endif %}
+  </header>
+
+  <div class="grid">
+    {% paginate collection.products by 24 %}
+      {% for product in collection.products %}
+        <div class="grid__item medium-up--one-quarter">
+          {% render 'product-card', product: product %}
+        </div>
+      {% endfor %}
+      
+      {% if paginate.pages > 1 %}
+        {% render 'pagination', paginate: paginate %}
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</div>

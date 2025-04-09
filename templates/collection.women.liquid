@@ -1,0 +1,72 @@
+<div class="collection-header relative h-[40vh] mb-12">
+  <div class="absolute inset-0">
+    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&q=80" alt="Women's Collection" class="w-full h-full object-cover">
+    <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+  </div>
+  <div class="relative h-full flex items-center justify-center text-center text-white">
+    <div>
+      <h1 class="text-4xl font-serif font-bold mb-4">Women's Collection</h1>
+      <p class="max-w-2xl mx-auto">Elegant leather pieces crafted with precision and care, perfect for the modern woman.</p>
+    </div>
+  </div>
+</div>
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+  <div class="flex flex-col lg:flex-row gap-8">
+    <div class="lg:w-64 flex-shrink-0">
+      <div class="sticky top-24">
+        <h2 class="font-medium mb-4">Filter By</h2>
+        
+        <div class="space-y-6">
+          {% for filter in collection.filters %}
+            <div>
+              <h3 class="font-medium mb-2">{{ filter.label }}</h3>
+              <div class="space-y-2">
+                {% for value in filter.values %}
+                  <label class="flex items-center">
+                    <input type="checkbox" 
+                           name="{{ filter.param_name }}"
+                           value="{{ value.param }}"
+                           {% if value.active %}checked{% endif %}
+                           class="rounded border-gray-300 text-black focus:ring-black">
+                    <span class="ml-2 text-sm">{{ value.label }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="flex-1">
+      <div class="flex justify-between items-center mb-8">
+        <div>
+          <span class="text-gray-500">{{ collection.products_count }} products</span>
+        </div>
+        <div>
+          <label for="sort-by" class="sr-only">Sort by</label>
+          <select id="sort-by" class="border-gray-300 rounded-md shadow-sm focus:ring-black focus:border-black">
+            {% for option in collection.sort_options %}
+              <option value="{{ option.value }}" {% if option.value == collection.sort_by %}selected{% endif %}>
+                {{ option.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
+        {% paginate collection.products by 24 %}
+          {% for product in collection.products %}
+            {% render 'product-card', product: product %}
+          {% endfor %}
+          
+          {% if paginate.pages > 1 %}
+            {% render 'pagination', paginate: paginate %}
+          {% endif %}
+        {% endpaginate %}
+      </div>
+    </div>
+  </div>
+</div>
